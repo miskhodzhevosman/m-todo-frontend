@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from './useTheme';
 
 export default function App() {
-  const [todos, setTodos] = useState([]);
-  const [filter, setFilter] = useState('all'); // all | active | done
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  useTheme(); // ← просто вызываем, чтобы тема применилась к <html>
 
-  async function load() {
+  const [todos, setTodos] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);  async function load() {
     setLoading(true);
     setError(null);
     try {
@@ -54,11 +56,12 @@ export default function App() {
     }
   }
 
-  return (
+    return (
     <div className="app">
-      <h1>📝 Todo</h1>
-
-      <TodoForm onCreate={handleCreate} />
+      <header className="app-header">
+        <h1>📝 Todo</h1>
+        <ThemeToggle />
+      </header>      <TodoForm onCreate={handleCreate} />
 
       <div className="filters">
         {['all', 'active', 'done'].map((f) => (
