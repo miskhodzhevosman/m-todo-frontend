@@ -6,6 +6,9 @@ const BASE = '/api';
 async function handle(res) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
+    if (res.status === 401 && !res.url.endsWith('/auth/login')) {
+      window.dispatchEvent(new Event('auth-expired'));
+    }
     throw new Error(err.detail || 'Request failed');
   }
   if (res.status === 204) return null;
@@ -20,6 +23,10 @@ function json(body) {
 }
 
 export const api = {
+  me: () => fetch(`${BASE}/auth/me`).then(handle),
+  login: (data) => fetch(`${BASE}/auth/login`, { method: 'POST', ...json(data) }).then(handle),
+  register: (data) => fetch(`${BASE}/auth/register`, { method: 'POST', ...json(data) }).then(handle),
+  logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST' }).then(handle),
   // ---- todos ----
   list: (filters = {}) => {
     const params = new URLSearchParams();

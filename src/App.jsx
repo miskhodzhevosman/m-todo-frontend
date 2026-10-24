@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AuthScreen from './AuthScreen';
 import { api } from './api';
 import TodoList from './TodoList';
 import AddTodoModal from './AddTodoModal';
@@ -9,6 +10,21 @@ import { useTheme } from './useTheme';
 
 export default function App() {
   useTheme();
+  const [user, setUser] = useState(null);
+  const [checking, setChecking] = useState(true);
+  useEffect(() => {
+    let active = true;
+    api.me().then((value) => { if (active) setUser(value); }).catch(() => {}).finally(() => { if (active) setChecking(false); });
+    const expired = () => setUser(null);
+    window.addEventListener('auth-expired', expired);
+    return () => { active = false; window.removeEventListener('auth-expired', expired); };
+  }, []);
+  if (checking) return <main className="auth-page" aria-busy="true">Загрузка…</main>;
+  if (!user) return <AuthScreen onAuthenticated={setUser} />;
+  return <Workspace key={user.id} user={user} onLogout={() => setUser(null)} />;
+}
+
+function Workspace({ user, onLogout }) {
 
   const [todos, setTodos] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -28,26 +44,17 @@ export default function App() {
     api.listCategories().then(setCategories).catch((e) => setError(e.message));
   }, []);
 
-  // ---- todos грузим при изменении фильтров ----
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const filters = {
+  useEffect(() => {
+    let active = true;
+    const filters = {
         completed: filter === 'all' ? undefined : filter === 'done',
         urgency: urgencyFilter || undefined,
         category_id: categoryFilter ?? undefined,
-      };
-      setTodos(await api.list(filters));
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
+    };
+    api.list(filters).then((items) => { if (active) setTodos(items); })
+      .catch((e) => { if (active) setError(e.message); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [filter, urgencyFilter, categoryFilter]);
 
   async function handleCreate(data) {
@@ -98,12 +105,17 @@ export default function App() {
   }
 
   const activeCount = todos.filter((t) => !t.completed).length;
+  function changeFilter(value) { if (value !== filter) { setLoading(true); setFilter(value); } }
+  async function logout() {
+    try { await api.logout(); onLogout(); } catch (e) { setError(e.message); }
+  }
 
   return (
     <div className="app">
       <header className="app-header">
         <div>
           <h1>Todo</h1>
+          <p className="account-name">{user.username}</p>
           {!loading && (
             <p className="subtitle">
               {activeCount > 0
@@ -118,6 +130,13 @@ export default function App() {
           <GearIcon />
         </button>
       </header>
+
+      <nav className="segmented task-tabs" aria-label="Статус задач">
+        {[['active', 'Активные'], ['all', 'Все'], ['done', 'Выполненные']].map(([value, label]) => (
+          <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value}
+            onClick={() => changeFilter(value)}>{label}</button>
+        ))}
+      </nav>
 
       {error && (
         <div className="error">
@@ -142,31 +161,34 @@ export default function App() {
         <PlusIcon />
       </button>
 
-      <AddTodoModal
+      {addOpen && <AddTodoModal
         open={addOpen}
         onClose={() => setAddOpen(false)}
         onCreate={handleCreate}
         categories={categories}
-      />
+      />}
 
-      <EditTodoModal
+      {editing && <EditTodoModal
+        key={editing.id}
         todo={editing}
         onClose={() => setEditing(null)}
         onSave={handleSaveEdit}
         categories={categories}
-      />
+      />}
 
       <SettingsPanel
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         filter={filter}
-        onFilterChange={setFilter}
+        onFilterChange={changeFilter}
         urgencyFilter={urgencyFilter}
         onUrgencyChange={setUrgencyFilter}
         categoryFilter={categoryFilter}
         onCategoryChange={setCategoryFilter}
         categories={categories}
         onCategoriesChange={setCategories}
+        user={user}
+        onLogout={logout}
       />
     </div>
   );

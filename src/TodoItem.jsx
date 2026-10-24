@@ -1,4 +1,4 @@
-import { CheckIcon, TrashIcon, EditIcon, CalendarIcon, FolderIcon } from './Icons';
+import { CheckIcon, TrashIcon, EditIcon, CalendarIcon } from './Icons';
 import { URGENCY_MAP } from './constants';
 
 function formatDue(iso) {

@@ -42,13 +42,9 @@
 * { box-sizing: border-box; }
 
 html, body, #root {
-  width: 800px;
-  min-width: 500px;
-  max-width: 500px;
-
-  height: 600px;
-  min-height: 600px;
-  max-height: 600px;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
   margin: 0;
   padding: 0;
 
@@ -307,7 +303,9 @@ button { font-family: inherit; }
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
   animation: pop-in 0.18s ease;
-  overflow: hidden;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 @keyframes pop-in {
@@ -766,17 +764,47 @@ button { font-family: inherit; }
   background: var(--checkbox-color, var(--primary));
   border-color: var(--checkbox-color, var(--primary));
 }
-/* Переопределение для browser extension popup */
-.app {
-  max-width: none;
-  margin: 0;
-  padding: 1rem 1rem 4rem;
-  border-radius: 0;
-  box-shadow: none;
+html { min-height: 100%; color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+body { min-height: 100dvh; }
+button, input, select, textarea { touch-action: manipulation; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--primary); outline-offset: 3px;
 }
-.fab {
-  bottom: 16px;
-  right: 16px;
-  width: 48px;
-  height: 48px;
+.icon-btn { min-width: 44px; min-height: 44px; }
+.task-tabs { margin-bottom: 1.5rem; }
+.task-tabs button { min-height: 44px; }
+.account-name { margin: .35rem 0; color: var(--text-muted); overflow-wrap: anywhere; }
+.account-section { display: flex; flex-direction: column; gap: .5rem; }
+.fab { bottom: max(24px, env(safe-area-inset-bottom)); right: max(24px, env(safe-area-inset-right)); z-index: 10; }
+.drawer-body { padding-bottom: max(1.25rem, env(safe-area-inset-bottom)); }
+.category-item .name, .badge { overflow-wrap: anywhere; min-width: 0; }
+.auth-page { min-height: 100dvh; display: grid; place-items: center; padding: 1.25rem; }
+.auth-card { width: 100%; max-width: 420px; padding: 2rem; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-md); }
+.auth-card h1 { margin: 0; font-size: 1.7rem; }
+.auth-logo { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--primary); color: white; font-size: 1.6rem; margin-bottom: 1.25rem; }
+.auth-form { padding: 1.5rem 0 1rem; }
+.auth-form .btn { min-height: 48px; }
+.auth-switch { color: var(--primary); min-height: 44px; padding: 0; text-align: left; }
+
+@media (max-width: 600px) {
+  .app { padding: max(1.25rem, env(safe-area-inset-top)) 1rem calc(6rem + env(safe-area-inset-bottom)); }
+  .todo-item { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: .5rem .65rem; padding: .85rem; }
+  .todo-item .actions { grid-column: 2; justify-content: flex-end; opacity: 1; }
+  .checkbox { width: 28px; height: 28px; position: relative; }
+  .checkbox::before { content: ''; position: absolute; inset: -8px; }
+  .icon-btn.small { width: 44px; height: 44px; }
+  .overlay:not(.drawer-overlay) { padding: .5rem; }
+  .modal { max-height: calc(100dvh - 1rem); }
+  .modal-header, .modal-body { padding: 1rem; }
+  .modal-actions .btn { flex: 1; min-height: 44px; }
+  .drawer { max-width: 100%; }
+  .drawer .modal-header { padding-top: max(1rem, env(safe-area-inset-top)); }
+  .segmented button { min-width: 0; padding: .5rem .35rem; min-height: 44px; }
+  .swatch { width: 32px; height: 32px; }
+  .category-create input, .category-item.editing input { font-size: 16px; }
+  .auth-card { padding: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

@@ -8,5 +8,5 @@
         ? 'dark'
         : 'light';
     document.documentElement.dataset.theme = theme;
-  } catch (e) {}
+  } catch { /* Storage may be unavailable in private browsing. */ }
 })();

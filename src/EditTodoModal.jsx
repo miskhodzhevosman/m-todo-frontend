@@ -11,20 +11,11 @@ function toLocalInputValue(iso) {
 }
 
 export default function EditTodoModal({ todo, onClose, onSave, categories }) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [urgency, setUrgency] = useState('medium');
-  const [dueAt, setDueAt] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-
-  useEffect(() => {
-    if (!todo) return;
-    setTitle(todo.title);
-    setDescription(todo.description || '');
-    setUrgency(todo.urgency);
-    setDueAt(toLocalInputValue(todo.due_at));
-    setCategoryId(todo.category_id ?? '');
-  }, [todo]);
+  const [title, setTitle] = useState(todo.title);
+  const [description, setDescription] = useState(todo.description || '');
+  const [urgency, setUrgency] = useState(todo.urgency);
+  const [dueAt, setDueAt] = useState(toLocalInputValue(todo.due_at));
+  const [categoryId, setCategoryId] = useState(todo.category_id ?? '');
 
   useEffect(() => {
     if (!todo) return;
@@ -50,7 +41,7 @@ export default function EditTodoModal({ todo, onClose, onSave, categories }) {
 
   return (
     <div className="overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-label="Редактировать задачу" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Редактировать</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Закрыть">

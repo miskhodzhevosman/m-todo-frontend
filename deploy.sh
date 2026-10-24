@@ -30,6 +30,8 @@ sudo chmod -R a+rX "$WEB_ROOT/releases/$RELEASE"
 sudo ln -s "$WEB_ROOT/releases/$RELEASE" "$WEB_ROOT/.current-$RELEASE"
 sudo mv -Tf "$WEB_ROOT/.current-$RELEASE" "$WEB_ROOT/current"
 
+# Keep domain/TLS/ACME settings configured on the host during normal updates.
+if ! sudo test -f /etc/nginx/m-todo-frontend.conf || [[ "${RECONFIGURE_NGINX:-0}" == 1 ]]; then
 sudo tee /etc/nginx/m-todo-frontend.conf >/dev/null <<NGINX
 server {
     listen 80;
@@ -58,6 +60,7 @@ server {
     }
 }
 NGINX
+fi
 # Arch's stock nginx.conf has no sites-enabled or conf.d include. Add an
 # explicit include first inside http so the app also handles requests by IP.
 # Keep the rest of the configuration and back up the original before editing.
@@ -81,6 +84,6 @@ PYTHON
 sudo nginx -t
 sudo systemctl enable --now nginx
 sudo systemctl reload nginx
-curl --fail --silent --show-error -H "Host: $SERVER_NAME" http://127.0.0.1/ >/dev/null
-curl --fail --silent --show-error -H "Host: $SERVER_NAME" http://127.0.0.1/api/categories >/dev/null
+curl --fail --silent --show-error --location --resolve "$SERVER_NAME:443:127.0.0.1" -H "Host: $SERVER_NAME" http://127.0.0.1/ >/dev/null
+curl --fail --silent --show-error --location --resolve "$SERVER_NAME:443:127.0.0.1" -H "Host: $SERVER_NAME" http://127.0.0.1/api/health >/dev/null
 printf 'Frontend deployed: http://%s (use the server IP if SERVER_NAME=_).\nAPI proxy: %s\n' "$SERVER_NAME" "$BACKEND_URL"

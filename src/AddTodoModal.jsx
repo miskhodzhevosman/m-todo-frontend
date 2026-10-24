@@ -12,12 +12,8 @@ export default function AddTodoModal({ open, onClose, onCreate, categories }) {
 
   useEffect(() => {
     if (open) {
-      setTitle('');
-      setDescription('');
-      setUrgency('medium');
-      setDueAt('');
-      setCategoryId('');
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const timer = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(timer);
     }
   }, [open]);
 
@@ -45,7 +41,7 @@ export default function AddTodoModal({ open, onClose, onCreate, categories }) {
 
   return (
     <div className="overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-label="Новая задача" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Новая задача</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Закрыть">

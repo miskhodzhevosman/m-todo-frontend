@@ -15,6 +15,8 @@ export default function SettingsPanel({
   onCategoryChange,
   categories,
   onCategoriesChange,
+  user,
+  onLogout,
 }) {
   const { preference, setTheme } = useTheme();
 
@@ -40,7 +42,7 @@ export default function SettingsPanel({
   return (
     <>
       <div className={`overlay drawer-overlay ${open ? 'show' : ''}`} onClick={onClose} />
-      <aside className={`drawer ${open ? 'open' : ''}`} aria-hidden={!open}>
+      <aside className={`drawer ${open ? 'open' : ''}`} aria-hidden={!open} inert={!open}>
         <div className="modal-header">
           <h2>Настройки</h2>
           <button className="icon-btn" onClick={onClose} aria-label="Закрыть">
@@ -49,6 +51,11 @@ export default function SettingsPanel({
         </div>
 
         <div className="drawer-body">
+          <section className="settings-section account-section">
+            <h3>Аккаунт</h3>
+            <p className="account-name">{user.username}</p>
+            <button className="btn ghost" onClick={onLogout}>Выйти</button>
+          </section>
           <section className="settings-section">
             <h3>Тема</h3>
             <div className="segmented">
