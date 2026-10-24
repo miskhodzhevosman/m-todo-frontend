@@ -1,189 +1,782 @@
 /* ---------- Тема ---------- */
 :root,
 :root[data-theme='light'] {
-  --bg: #f5f5f5;
+  --bg: #f6f7f9;
   --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-muted: #666;
-  --text-subtle: #999;
-  --border: #e5e5e5;
-  --input-border: #ddd;
+  --surface-2: #f1f2f5;
+  --text: #14161a;
+  --text-muted: #5b6471;
+  --text-subtle: #9aa3af;
+  --border: #e8eaed;
+  --input-border: #dcdfe4;
   --primary: #4f46e5;
   --primary-hover: #4338ca;
-  --danger: #c00;
-  --danger-bg: #fee;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --primary-soft: #eef0ff;
+  --danger: #d92d20;
+  --danger-bg: #fee4e2;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.12);
+  --shadow-lg: 0 20px 48px rgba(16, 24, 40, 0.2);
 }
 
 :root[data-theme='dark'] {
-  --bg: #121212;
-  --surface: #1e1e1e;
-  --text: #eaeaea;
-  --text-muted: #a5a5a5;
-  --text-subtle: #777;
-  --border: #2c2c2c;
-  --input-border: #3a3a3a;
+  --bg: #0d0f13;
+  --surface: #171a21;
+  --surface-2: #1f232c;
+  --text: #e7eaf0;
+  --text-muted: #9aa3af;
+  --text-subtle: #6b7280;
+  --border: #262b35;
+  --input-border: #333a47;
   --primary: #6366f1;
   --primary-hover: #818cf8;
-  --danger: #ff6b6b;
+  --primary-soft: #232437;
+  --danger: #f97066;
   --danger-bg: #3a1a1a;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.6);
 }
 
 /* ---------- База ---------- */
 * { box-sizing: border-box; }
 
+html, body, #root {
+  width: 800px;
+  min-width: 500px;
+  max-width: 500px;
+
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
+  margin: 0;
+  padding: 0;
+
+}
+
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  transition: background 0.15s, color 0.15s;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
 }
 
+button { font-family: inherit; }
+
+/* ---------- Контейнер ---------- */
 .app {
-  max-width: 560px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: var(--surface);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 6rem;
 }
 
+/* ---------- Шапка ---------- */
 .app-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-h1 { margin: 0; }
-
-/* ---------- Theme toggle ---------- */
-.theme-toggle {
-  display: flex;
-  gap: 0.25rem;
-  background: var(--bg);
-  padding: 0.2rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+.app-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.theme-toggle button {
-  background: transparent;
-  border: none;
+.subtitle {
+  margin: 0.25rem 0 0;
   color: var(--text-muted);
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* ---------- Круглая иконочная кнопка ---------- */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
   cursor: pointer;
-  font-size: 0.8rem;
-  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
 }
 
-.theme-toggle button.active {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow);
-}
-
-/* ---------- Форма ---------- */
-.todo-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.todo-form input {
-  padding: 0.6rem;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  font-size: 1rem;
-  background: var(--surface);
+.icon-btn:hover {
+  background: var(--surface-2);
   color: var(--text);
 }
 
-.todo-form button {
-  padding: 0.6rem;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.todo-form button:hover { background: var(--primary-hover); }
-
-/* ---------- Фильтры ---------- */
-.filters {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.filters button {
-  flex: 1;
-  padding: 0.4rem;
-  border: 1px solid var(--input-border);
-  background: var(--surface);
-  color: var(--text);
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.filters button.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
+.icon-btn:active { transform: scale(0.96); }
 
 /* ---------- Список ---------- */
 .todo-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.todo-list li {
+.todo-item {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.todo-list li.done .title {
+.todo-item:hover { border-color: var(--input-border); }
+
+.checkbox {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 2px solid var(--input-border);
+  background: transparent;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.checkbox:hover { border-color: var(--primary); }
+.checkbox:active { transform: scale(0.9); }
+
+.todo-item.done .checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.todo-item .content {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-item .title {
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.todo-item .desc {
+  margin-top: 0.15rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.todo-item.done .title {
   text-decoration: line-through;
   color: var(--text-subtle);
 }
 
-.todo-list .content { flex: 1; }
-.todo-list .title { font-weight: 500; }
-.todo-list .desc {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-top: 0.2rem;
-}
-
-.todo-list .delete {
-  background: transparent;
-  border: none;
-  color: var(--danger);
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-.empty {
+.todo-item.done .desc {
   color: var(--text-subtle);
-  text-align: center;
 }
 
-.error {
+.todo-item .delete {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+.todo-item:hover .delete { opacity: 1; }
+.todo-item .delete:hover {
   background: var(--danger-bg);
   color: var(--danger);
-  padding: 0.5rem;
-  border-radius: 6px;
+}
+
+@media (hover: none) {
+  .todo-item .delete { opacity: 1; }
+}
+
+/* ---------- Пустое состояние ---------- */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-emoji {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.6;
+}
+
+/* ---------- Ошибка ---------- */
+.error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
   margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.link {
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+/* ---------- FAB ---------- */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.fab:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.fab:active { transform: translateY(0) scale(0.96); }
+
+/* ---------- Overlay (общий для модалки и drawer) ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 16, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fade-in 0.15s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Модалка ---------- */
+.modal {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  animation: pop-in 0.18s ease;
+  overflow: hidden;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modal-body label > span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.modal-body label em {
+  font-style: normal;
+  color: var(--text-subtle);
+  font-weight: 400;
+}
+
+.modal-body input,
+.modal-body textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.modal-body input:focus,
+.modal-body textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.btn {
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn.primary:hover { background: var(--primary-hover); }
+
+.btn.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.btn.ghost:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ---------- Drawer (настройки) ---------- */
+.drawer-overlay {
+  background: rgba(10, 12, 16, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  padding: 0;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.drawer-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer.open { transform: translateX(0); }
+
+.drawer-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settings-section h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+/* ---------- Segmented control ---------- */
+.segmented {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--surface-2);
+  padding: 0.25rem;
+  border-radius: 10px;
+}
+
+.segmented button {
+  flex: 1;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.segmented button:hover { color: var(--text); }
+
+.segmented button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Мобилки ---------- */
+@media (max-width: 480px) {
+  .app { padding: 1.25rem 1rem 6rem; }
+  .app-header h1 { font-size: 1.4rem; }
+  .drawer { max-width: 100%; }
+}
+/* ---------- Двухколоночная раскладка в модалке ---------- */
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .row-2 { grid-template-columns: 1fr; }
+}
+
+.modal-body select,
+.full-select {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.modal-body select:focus,
+.full-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ---------- Группы задач ---------- */
+.todo-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.todo-group .group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.todo-group .group-title .count {
+  margin-left: auto;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ---------- Meta-бейджи в карточке ---------- */
+.todo-item .content { min-width: 0; }
+
+.todo-item .title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.todo-item .title { flex: 1; min-width: 0; }
+
+.urgency-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.todo-item .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  line-height: 1.4;
+}
+
+.badge.category .dot { margin-right: 0.15rem; }
+
+.badge.due.overdue {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.badge.urgency {
+  background: transparent;
+  font-weight: 500;
+}
+
+/* ---------- Действия в карточке ---------- */
+.todo-item .actions {
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.todo-item:hover .actions { opacity: 1; }
+
+.icon-btn.small {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+@media (hover: none) {
+  .todo-item .actions { opacity: 1; }
+}
+
+/* ---------- Категории в настройках ---------- */
+.category-manager { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--surface-2);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.category-item .name { flex: 1; }
+
+.category-item.editing {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.category-item.editing input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.color-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, border-color 0.15s;
+}
+
+.swatch:hover { transform: scale(1.1); }
+
+.swatch.active {
+  border-color: var(--text);
+  transform: scale(1.1);
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn.small {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.category-create {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--input-border);
+  border-radius: 10px;
+}
+
+.category-create input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* ---------- Segmented с переносом ---------- */
+.segmented.wrap {
+  flex-wrap: wrap;
+}
+
+.segmented.wrap button {
+  flex: 0 0 auto;
+  min-width: 40%;
+}
+
+/* ---------- Кастомный чекбокс с цветом срочности ---------- */
+.checkbox:hover {
+  border-color: var(--checkbox-color, var(--primary));
+}
+
+.todo-item.done .checkbox {
+  background: var(--checkbox-color, var(--primary));
+  border-color: var(--checkbox-color, var(--primary));
+}
+/* Переопределение для browser extension popup */
+.app {
+  max-width: none;
+  margin: 0;
+  padding: 1rem 1rem 4rem;
+  border-radius: 0;
+  box-shadow: none;
+}
+.fab {
+  bottom: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
 }

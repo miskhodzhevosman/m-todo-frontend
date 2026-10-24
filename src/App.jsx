@@ -1,23 +1,44 @@
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import TodoForm from './TodoForm';
 import TodoList from './TodoList';
-import ThemeToggle from './ThemeToggle';
+import AddTodoModal from './AddTodoModal';
+import EditTodoModal from './EditTodoModal';
+import SettingsPanel from './SettingsPanel';
+import { PlusIcon, GearIcon } from './Icons';
 import { useTheme } from './useTheme';
 
 export default function App() {
-  useTheme(); // ← просто вызываем, чтобы тема применилась к <html>
+  useTheme();
 
   const [todos, setTodos] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);  async function load() {
+  const [error, setError] = useState(null);
+
+  const [filter, setFilter] = useState('active');
+  const [urgencyFilter, setUrgencyFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState(null);
+
+  const [addOpen, setAddOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // ---- категории грузим один раз ----
+  useEffect(() => {
+    api.listCategories().then(setCategories).catch((e) => setError(e.message));
+  }, []);
+
+  // ---- todos грузим при изменении фильтров ----
+  async function load() {
     setLoading(true);
     setError(null);
     try {
-      const completed =
-        filter === 'all' ? undefined : filter === 'done';
-      setTodos(await api.list(completed));
+      const filters = {
+        completed: filter === 'all' ? undefined : filter === 'done',
+        urgency: urgencyFilter || undefined,
+        category_id: categoryFilter ?? undefined,
+      };
+      setTodos(await api.list(filters));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -27,12 +48,18 @@ export default function App() {
 
   useEffect(() => {
     load();
-  }, [filter]);
+  }, [filter, urgencyFilter, categoryFilter]);
 
   async function handleCreate(data) {
     try {
       const created = await api.create(data);
-      setTodos((prev) => [created, ...prev]);
+      // если задача не проходит текущие фильтры — просто не показываем её сразу
+      const matchesFilters =
+        (filter === 'all' || (filter === 'active' && !created.completed)) &&
+        (!urgencyFilter || created.urgency === urgencyFilter) &&
+        (categoryFilter == null || created.category_id === categoryFilter);
+      if (matchesFilters) setTodos((prev) => [created, ...prev]);
+      setAddOpen(false);
     } catch (e) {
       setError(e.message);
     }
@@ -41,7 +68,11 @@ export default function App() {
   async function handleToggle(todo) {
     try {
       const updated = await api.update(todo.id, { completed: !todo.completed });
-      setTodos((prev) => prev.map((t) => (t.id === todo.id ? updated : t)));
+      if (filter === 'all') {
+        setTodos((prev) => prev.map((t) => (t.id === todo.id ? updated : t)));
+      } else {
+        setTodos((prev) => prev.filter((t) => t.id !== todo.id));
+      }
     } catch (e) {
       setError(e.message);
     }
@@ -56,35 +87,87 @@ export default function App() {
     }
   }
 
-    return (
+  async function handleSaveEdit(id, data) {
+    try {
+      const updated = await api.update(id, data);
+      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
+      setEditing(null);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  const activeCount = todos.filter((t) => !t.completed).length;
+
+  return (
     <div className="app">
       <header className="app-header">
-        <h1>📝 Todo</h1>
-        <ThemeToggle />
-      </header>      <TodoForm onCreate={handleCreate} />
+        <div>
+          <h1>Todo</h1>
+          {!loading && (
+            <p className="subtitle">
+              {activeCount > 0
+                ? `${activeCount} активных`
+                : todos.length > 0
+                ? 'Все выполнено 🎉'
+                : 'Ничего не запланировано'}
+            </p>
+          )}
+        </div>
+        <button className="icon-btn" onClick={() => setSettingsOpen(true)} aria-label="Настройки">
+          <GearIcon />
+        </button>
+      </header>
 
-      <div className="filters">
-        {['all', 'active', 'done'].map((f) => (
-          <button
-            key={f}
-            className={filter === f ? 'active' : ''}
-            onClick={() => setFilter(f)}
-          >
-            {f === 'all' ? 'Все' : f === 'active' ? 'Активные' : 'Выполненные'}
-          </button>
-        ))}
-      </div>
+      {error && (
+        <div className="error">
+          {error}
+          <button className="link" onClick={() => setError(null)}>скрыть</button>
+        </div>
+      )}
 
-      {error && <div className="error">Ошибка: {error}</div>}
       {loading ? (
-        <p>Загрузка…</p>
+        <p className="empty">Загрузка…</p>
       ) : (
         <TodoList
           todos={todos}
+          filter={filter}
           onToggle={handleToggle}
           onDelete={handleDelete}
+          onEdit={setEditing}
         />
       )}
+
+      <button className="fab" onClick={() => setAddOpen(true)} aria-label="Добавить задачу">
+        <PlusIcon />
+      </button>
+
+      <AddTodoModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onCreate={handleCreate}
+        categories={categories}
+      />
+
+      <EditTodoModal
+        todo={editing}
+        onClose={() => setEditing(null)}
+        onSave={handleSaveEdit}
+        categories={categories}
+      />
+
+      <SettingsPanel
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        filter={filter}
+        onFilterChange={setFilter}
+        urgencyFilter={urgencyFilter}
+        onUrgencyChange={setUrgencyFilter}
+        categoryFilter={categoryFilter}
+        onCategoryChange={setCategoryFilter}
+        categories={categories}
+        onCategoriesChange={setCategories}
+      />
     </div>
   );
 }

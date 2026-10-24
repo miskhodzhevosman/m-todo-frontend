@@ -1,4 +1,8 @@
-const BASE = '/api';
+
+const BASE = import.meta.env.DEV
+  ? '/api'                              // в dev — через прокси Vite
+  : 'http://127.0.0.1:8000'; 
+
 
 async function handle(res) {
   if (!res.ok) {
@@ -9,23 +13,38 @@ async function handle(res) {
   return res.json();
 }
 
+function json(body) {
+  return {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  };
+}
+
 export const api = {
-  list: (completed) => {
-    const qs = completed === undefined ? '' : `?completed=${completed}`;
-    return fetch(`${BASE}/todos${qs}`).then(handle);
+  // ---- todos ----
+  list: (filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.completed !== undefined) params.set('completed', filters.completed);
+    if (filters.urgency) params.set('urgency', filters.urgency);
+    if (filters.category_id != null) params.set('category_id', filters.category_id);
+    if (filters.overdue) params.set('overdue', 'true');
+    const qs = params.toString();
+    return fetch(`${BASE}/todos${qs ? '?' + qs : ''}`).then(handle);
   },
+  get: (id) => fetch(`${BASE}/todos/${id}`).then(handle),
   create: (data) =>
-    fetch(`${BASE}/todos`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then(handle),
+    fetch(`${BASE}/todos`, { method: 'POST', ...json(data) }).then(handle),
   update: (id, data) =>
-    fetch(`${BASE}/todos/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then(handle),
+    fetch(`${BASE}/todos/${id}`, { method: 'PATCH', ...json(data) }).then(handle),
   remove: (id) =>
     fetch(`${BASE}/todos/${id}`, { method: 'DELETE' }).then(handle),
+
+  // ---- categories ----
+  listCategories: () => fetch(`${BASE}/categories`).then(handle),
+  createCategory: (data) =>
+    fetch(`${BASE}/categories`, { method: 'POST', ...json(data) }).then(handle),
+  updateCategory: (id, data) =>
+    fetch(`${BASE}/categories/${id}`, { method: 'PATCH', ...json(data) }).then(handle),
+  removeCategory: (id) =>
+    fetch(`${BASE}/categories/${id}`, { method: 'DELETE' }).then(handle),
 };
