@@ -1,16 +1,65 @@
-# React + Vite
+# m-todo-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Интерфейс задач на React + Vite. Требуются Node.js 22.12+ и npm.
 
-Currently, two official plugins are available:
+## Локальный запуск
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm ci
+npm run dev
+```
 
-## React Compiler
+Запустите бэкенд на `127.0.0.1:8000`. Vite проксирует `/api/*` на бэкенд,
+удаляя префикс `/api`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Развёртывание на Linux
 
-## Expanding the ESLint configuration
+Целевая система — Ubuntu/Debian с systemd. Нужны Node.js 22.12+, npm, `curl`
+и обычный пользователь с правами sudo. Сначала разверните `m-todo-backend`
+его скриптом `./deploy.sh`, затем в этой репозитории выполните:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```sh
+./deploy.sh
+```
+
+Приложение будет доступно по HTTP на IP сервера (порт 80). Для домена и/или
+другого адреса бэкенда:
+
+```sh
+SERVER_NAME=todo.example.com BACKEND_URL=http://127.0.0.1:8000 ./deploy.sh
+```
+
+Домен должен указывать на сервер. `BACKEND_URL` — адрес, доступный самому Nginx,
+в формате `http://host:port` без завершающего `/`. По умолчанию `SERVER_NAME=_`,
+`BACKEND_URL=http://127.0.0.1:8000`. Порт 80 должен быть доступен снаружи.
+HTTPS настраивается отдельно для вашего домена, например через Certbot.
+
+Скрипт:
+
+1. Устанавливает зависимости из lock-файла (`npm ci`) и собирает приложение.
+2. Устанавливает Nginx через apt.
+3. Публикует сборку в `/var/www/m-todo-frontend/releases/` и атомарно переключает
+   символьную ссылку `current`. Предыдущие сборки сохраняются.
+4. Создаёт `/etc/nginx/sites-available/m-todo-frontend` и включает сайт.
+   Стандартный сайт Debian/Ubuntu `sites-enabled/default` отключается;
+   конфигурация этого приложения перезаписывается при каждом развёртывании.
+5. Настраивает SPA-маршрутизацию, кэширование ассетов и прокси `/api/` к бэкенду.
+6. Проверяет конфигурацию Nginx, включает автозапуск и проверяет HTTP и API.
+
+Браузер обращается к `/api` на том же origin: адрес бэкенда не зашивается
+в production-сборку, CORS для такого размещения не требуется.
+
+Обновление: `git pull` и повторный запуск `./deploy.sh` с теми же параметрами.
+
+```sh
+sudo nginx -t
+sudo systemctl status nginx
+sudo journalctl -u nginx -f
+```
+
+## Сборка и проверки
+
+```sh
+npm run build
+npm run lint
+```

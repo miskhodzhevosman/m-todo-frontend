@@ -1,7 +1,6 @@
 
-const BASE = import.meta.env.DEV
-  ? '/api'                              // в dev — через прокси Vite
-  : 'http://127.0.0.1:8000'; 
+// Vite proxies /api locally; Nginx provides the same route in production.
+const BASE = '/api';
 
 
 async function handle(res) {
