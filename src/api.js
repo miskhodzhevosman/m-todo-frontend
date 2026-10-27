@@ -25,7 +25,6 @@ function json(body) {
 export const api = {
   me: () => fetch(`${BASE}/auth/me`).then(handle),
   login: (data) => fetch(`${BASE}/auth/login`, { method: 'POST', ...json(data) }).then(handle),
-  register: (data) => fetch(`${BASE}/auth/register`, { method: 'POST', ...json(data) }).then(handle),
   logout: () => fetch(`${BASE}/auth/logout`, { method: 'POST' }).then(handle),
   // ---- todos ----
   list: (filters = {}) => {

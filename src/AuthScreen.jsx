@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { api } from './api';
 
 export default function AuthScreen({ onAuthenticated }) {
-  const [register, setRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +12,7 @@ export default function AuthScreen({ onAuthenticated }) {
     setBusy(true);
     setError('');
     try {
-      const user = await api[register ? 'register' : 'login']({ username, password });
+      const user = await api.login({ username, password });
       onAuthenticated(user);
     } catch (error) {
       setError(error.message);
@@ -26,7 +25,7 @@ export default function AuthScreen({ onAuthenticated }) {
     <main className="auth-page">
       <section className="auth-card">
         <div className="auth-logo" aria-hidden="true">✓</div>
-        <h1>{register ? 'Создать аккаунт' : 'С возвращением'}</h1>
+        <h1>С возвращением</h1>
         <p className="subtitle">Ваши задачи — в одном месте, на любом устройстве.</p>
         <form className="modal-body auth-form" onSubmit={submit}>
           <label>
@@ -38,17 +37,14 @@ export default function AuthScreen({ onAuthenticated }) {
           </label>
           <label>
             <span>Пароль</span>
-            <input name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'}
+            <input name="password" type="password" autoComplete="current-password"
               required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} />
           </label>
           {error && <div className="error" role="alert">{error}</div>}
           <button className="btn primary" disabled={busy} type="submit">
-            {busy ? 'Подождите…' : register ? 'Зарегистрироваться' : 'Войти'}
+            {busy ? 'Подождите…' : 'Войти'}
           </button>
         </form>
-        <button className="link auth-switch" disabled={busy} onClick={() => { setRegister(!register); setError(''); }}>
-          {register ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
-        </button>
       </section>
     </main>
   );
